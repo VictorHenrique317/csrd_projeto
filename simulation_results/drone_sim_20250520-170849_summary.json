@@ -1,0 +1,477 @@
+{
+    "simulation_parameters": {
+        "duration_seconds_effective": 30,
+        "speed_factor": 1.0,
+        "num_groups": 1,
+        "num_drones_per_group": 5,
+        "prob_is_initially_abs_defective": 0.2,
+        "abs_pos_error_magnitude": 1.0,
+        "prob_is_initially_rel_defective": 0.2,
+        "rel_pos_error_magnitude": 0.8,
+        "abs_pos_error_threshold_validation": 0.5,
+        "rel_pos_error_threshold_validation": 0.3
+    },
+    "overall_performance": {
+        "total_messages_exchanged": 679,
+        "total_completed_steps": 1361,
+        "consensus_rounds_initiated": 55,
+        "consensus_rounds_completed_with_decision": 52,
+        "simulation_wall_clock_time_seconds": 30.11,
+        "average_consensus_time_seconds": 0.6519
+    },
+    "validation_metrics": {
+        "true_positives": 42,
+        "false_positives": 1,
+        "true_negatives": 9,
+        "false_negatives": 0,
+        "accuracy": 0.9808,
+        "precision": 0.9767,
+        "recall": 1.0,
+        "specificity": 0.9
+    },
+    "final_drone_info": [
+        {
+            "drone_id": "D1",
+            "group_id": 0,
+            "final_score": 100,
+            "is_abs_defective": false,
+            "is_rel_defective": false
+        },
+        {
+            "drone_id": "D2",
+            "group_id": 0,
+            "final_score": 50.3,
+            "is_abs_defective": true,
+            "is_rel_defective": false
+        },
+        {
+            "drone_id": "D3",
+            "group_id": 0,
+            "final_score": 100,
+            "is_abs_defective": false,
+            "is_rel_defective": false
+        },
+        {
+            "drone_id": "D4",
+            "group_id": 0,
+            "final_score": 100,
+            "is_abs_defective": false,
+            "is_rel_defective": false
+        },
+        {
+            "drone_id": "D5",
+            "group_id": 0,
+            "final_score": 100,
+            "is_abs_defective": false,
+            "is_rel_defective": false
+        }
+    ],
+    "drone_proposal_performance": [
+        {
+            "drone_id": "D2",
+            "proposals_made": 12,
+            "proposals_rejected": 9,
+            "proposals_successful": 3,
+            "rejection_rate_percent": 75.0,
+            "success_rate_percent": 25.0
+        },
+        {
+            "drone_id": "D1",
+            "proposals_made": 0,
+            "proposals_rejected": 0,
+            "proposals_successful": 0,
+            "rejection_rate_percent": 0,
+            "success_rate_percent": 0
+        },
+        {
+            "drone_id": "D3",
+            "proposals_made": 11,
+            "proposals_rejected": 0,
+            "proposals_successful": 11,
+            "rejection_rate_percent": 0.0,
+            "success_rate_percent": 100.0
+        },
+        {
+            "drone_id": "D4",
+            "proposals_made": 13,
+            "proposals_rejected": 0,
+            "proposals_successful": 13,
+            "rejection_rate_percent": 0.0,
+            "success_rate_percent": 100.0
+        },
+        {
+            "drone_id": "D5",
+            "proposals_made": 19,
+            "proposals_rejected": 0,
+            "proposals_successful": 19,
+            "rejection_rate_percent": 0.0,
+            "success_rate_percent": 100.0
+        }
+    ],
+    "prepare_phase_voting_details_sample": [
+        {
+            "seq_num": 0,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 1,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 2,
+            "proposer_id": "D4",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 3,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 4,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 5,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 6,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 7,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 8,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 9,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 10,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 11,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 12,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 13,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 14,
+            "proposer_id": "D4",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 15,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 16,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 17,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 18,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 19,
+            "proposer_id": "D4",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 20,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 21,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 22,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 23,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 24,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 25,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 26,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 27,
+            "proposer_id": "D3",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 28,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 29,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 30,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 31,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 32,
+            "proposer_id": "D4",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 33,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 34,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 35,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 36,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 37,
+            "proposer_id": "D2",
+            "consistent_votes_for": 0,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": false
+        },
+        {
+            "seq_num": 38,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 39,
+            "proposer_id": "D3",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 40,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 41,
+            "proposer_id": "D3",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 42,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 43,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 44,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 45,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 46,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 47,
+            "proposer_id": "D5",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 48,
+            "proposer_id": "D5",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 49,
+            "proposer_id": "D4",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 50,
+            "proposer_id": "D3",
+            "consistent_votes_for": 2,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        },
+        {
+            "seq_num": 51,
+            "proposer_id": "D2",
+            "consistent_votes_for": 3,
+            "total_prepare_votes_received": 3,
+            "group_decision_was_consistent": true
+        }
+    ]
+}

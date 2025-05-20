@@ -35,6 +35,9 @@ class SimulationStatistics:
         self.false_negatives = 0
         self.prepare_vote_details = []  # List of dicts
 
+        self.consensus_start_times = []
+        self.consensus_durations = []
+
     def increment_message_count(self):
         with self.lock:
             self.total_messages_exchanged += 1
@@ -46,6 +49,8 @@ class SimulationStatistics:
     def record_consensus_initiated(self):
         with self.lock:
             self.consensus_rounds_initiated += 1
+            # Registra o instante de início deste consenso
+            self.consensus_start_times.append(time.time())
 
     def record_consensus_decision(
         self,
@@ -56,6 +61,12 @@ class SimulationStatistics:
     ):
         with self.lock:
             self.consensus_rounds_completed += 1
+            # Calcula a duração do consenso se houver um tempo de início
+            # registrado
+            if self.consensus_start_times:
+                start_time = self.consensus_start_times.pop(0)
+                duration = time.time() - start_time
+                self.consensus_durations.append(duration)
             if proposer_input_was_accurate_gt and group_decision_consistent:
                 self.true_positives += 1
             elif (
@@ -141,7 +152,7 @@ class SimulationStatistics:
                 "specificity": "N/A"
             })
         return vm
-    
+
     def _get_summary_data(self, drones_list_objs):
         summary_data = {
             "simulation_parameters": {
@@ -163,7 +174,10 @@ class SimulationStatistics:
                 "consensus_rounds_completed_with_decision": self.consensus_rounds_completed,  # noqa: E501
                 "simulation_wall_clock_time_seconds": round(
                     time.time() - self.start_real_time, 2
-                )
+                ),
+                "average_consensus_time_seconds": round(
+                    sum(self.consensus_durations) / len(self.consensus_durations), 4  # noqa: E501
+                ) if self.consensus_durations else "N/A"
             },
             "validation_metrics": self._calculate_validation_metrics(),
             "final_drone_info": [
@@ -233,13 +247,16 @@ class SimulationStatistics:
             "Simulation Wall Clock Time: %ss",
             op["simulation_wall_clock_time_seconds"]
         )
+        logging.critical(
+            "Average Consensus Time: %s seconds",
+            op["average_consensus_time_seconds"]
+        )
         logging.critical("-" * 30)
 
         # Métricas de validação
         vm = summary["validation_metrics"]
         logging.critical(
-            "Validation Performance "
-            "(baseado na precisão do sensor do propositor):"
+            "Validation Performance (baseado na precisão do sensor do propositor):"  # noqa: E501
         )
         logging.critical("  True Positives: %s", vm["true_positives"])
         logging.critical("  False Positives: %s << SYSTEM ERROR", vm["false_positives"])  # noqa: E501
@@ -262,9 +279,7 @@ class SimulationStatistics:
         logging.critical("-" * 30)
 
         # Desempenho das propostas dos drones
-        logging.critical(
-            "Drone Proposal Performance (Ordenado por Taxa de Rejeição):"
-        )
+        logging.critical("Drone Proposal Performance (Ordenado por Taxa de Rejeição):")  # noqa: E501
         for dp in summary["drone_proposal_performance"]:
             logging.critical(
                 "    %s: %s/%s rejeitados (%s%%)",

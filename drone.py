@@ -16,8 +16,7 @@ from config import (
     CREDIT_MANAGED_REJECTION, CREDIT_REJECTED_PROPOSAL,
     CREDIT_PARTICIPATED_SUCCESSFUL_VALIDATION, CREDIT_PARTICIPATED_REJECTION,
     PROB_DRONE_INITIATES_CONSENSUS, PROB_LEADER_INITIATES_CONSENSUS_SELF,
-    PROB_ABS_GETS_DEFECTIVE, PROB_REL_GETS_DEFECTIVE,
-    SIMULATION_DURATION_SECONDS)
+    PROB_ABS_GETS_DEFECTIVE, PROB_REL_GETS_DEFECTIVE)
 from data_structures import (
     Position, DroneConsensusStatus, DistanceVector, calculate_vector_distance,
     calculate_distance, ConsensusMessage, MessageType)
@@ -54,7 +53,11 @@ class Drone(threading.Thread):
         self.proposals_made = 0
         self.proposals_rejected_by_group = 0
         self.is_drone_abs_defective = random.random() < PROB_IS_INITIALLY_ABS_DEFECTIVE  # noqa: E501
+        self.is_drone_abs_defective = False if is_management_node else \
+            self.is_drone_abs_defective
         self.is_drone_rel_defective = random.random() < PROB_IS_INITIALLY_REL_DEFECTIVE  # noqa: E501
+        self.is_drone_rel_defective = False if is_management_node else \
+            self.is_drone_rel_defective
 
         logging.info(
             f"Drone {self.drone_id} initialized at true_pos {self.true_abs_pos}, "  # noqa: E501
