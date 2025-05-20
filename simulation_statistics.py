@@ -8,9 +8,9 @@ from config import (
     SIMULATION_SPEED_FACTOR,
     NUM_GROUPS,
     NUM_DRONES_PER_GROUP,
-    PROB_INJECT_ABS_POS_SENSOR_ERROR,
+    PROB_IS_INITIALLY_ABS_DEFECTIVE,
     ABS_POS_ERROR_MAGNITUDE,
-    PROB_INJECT_REL_POS_SENSOR_ERROR,
+    PROB_IS_INITIALLY_REL_DEFECTIVE,
     REL_POS_ERROR_MAGNITUDE,
     ABSOLUTE_POSITION_ERROR_THRESHOLD,
     RELATIVE_POSITION_ERROR_THRESHOLD,
@@ -26,6 +26,7 @@ class SimulationStatistics:
         self.lock = threading.Lock()
         self.start_real_time = time.time()
         self.total_messages_exchanged = 0
+        self.total_completed_steps = 0
         self.consensus_rounds_initiated = 0
         self.consensus_rounds_completed = 0
         self.true_positives = 0
@@ -37,6 +38,10 @@ class SimulationStatistics:
     def increment_message_count(self):
         with self.lock:
             self.total_messages_exchanged += 1
+
+    def increment_completed_steps_count(self):
+        with self.lock:
+            self.total_completed_steps += 1
 
     def record_consensus_initiated(self):
         with self.lock:
@@ -136,7 +141,7 @@ class SimulationStatistics:
                 "specificity": "N/A"
             })
         return vm
-
+    
     def _get_summary_data(self, drones_list_objs):
         summary_data = {
             "simulation_parameters": {
@@ -144,15 +149,16 @@ class SimulationStatistics:
                 "speed_factor": SIMULATION_SPEED_FACTOR,
                 "num_groups": NUM_GROUPS,
                 "num_drones_per_group": NUM_DRONES_PER_GROUP,
-                "prob_inject_abs_pos_error": PROB_INJECT_ABS_POS_SENSOR_ERROR,
+                "prob_is_initially_abs_defective": PROB_IS_INITIALLY_ABS_DEFECTIVE,  # noqa: E501
                 "abs_pos_error_magnitude": ABS_POS_ERROR_MAGNITUDE,
-                "prob_inject_rel_pos_error": PROB_INJECT_REL_POS_SENSOR_ERROR,
+                "prob_is_initially_rel_defective": PROB_IS_INITIALLY_REL_DEFECTIVE,  # noqa: E501
                 "rel_pos_error_magnitude": REL_POS_ERROR_MAGNITUDE,
                 "abs_pos_error_threshold_validation": ABSOLUTE_POSITION_ERROR_THRESHOLD,  # noqa: E501
                 "rel_pos_error_threshold_validation": RELATIVE_POSITION_ERROR_THRESHOLD,  # noqa: E501
             },
             "overall_performance": {
                 "total_messages_exchanged": self.total_messages_exchanged,
+                "total_completed_steps": self.total_completed_steps,
                 "consensus_rounds_initiated": self.consensus_rounds_initiated,
                 "consensus_rounds_completed_with_decision": self.consensus_rounds_completed,  # noqa: E501
                 "simulation_wall_clock_time_seconds": round(
@@ -160,10 +166,16 @@ class SimulationStatistics:
                 )
             },
             "validation_metrics": self._calculate_validation_metrics(),
-            "drone_final_credits": {
-                drone.drone_id: round(drone.credit_score, 1)
+            "final_drone_info": [
+                {
+                    "drone_id": drone.drone_id,
+                    "group_id": drone.group_id,
+                    "final_score": round(drone.credit_score, 1),
+                    "is_abs_defective": drone.is_drone_abs_defective,
+                    "is_rel_defective": drone.is_drone_rel_defective,
+                }
                 for drone in sorted(drones_list_objs, key=lambda d: d.drone_id)
-            },
+            ],
             "drone_proposal_performance": [],
             "prepare_phase_voting_details_sample": self.prepare_vote_details
         }
@@ -208,6 +220,9 @@ class SimulationStatistics:
             "Total Messages Exchanged: %s", op["total_messages_exchanged"]
         )
         logging.critical(
+            "Total Completed Steps: %s", op["total_completed_steps"]
+        )
+        logging.critical(
             "Consensus Rounds Initiated: %s", op["consensus_rounds_initiated"]
         )
         logging.critical(
@@ -236,10 +251,14 @@ class SimulationStatistics:
         logging.critical("  Specificity: %s", self._format_percentage(vm["specificity"]))  # noqa: E501
         logging.critical("-" * 30)
 
-        # Créditos finais dos drones
-        logging.critical("Final Drone Credit Scores:")
-        for drone_id, score in summary["drone_final_credits"].items():
-            logging.critical("  %s: %s", drone_id, score)
+        # Informações finais dos drones
+        logging.critical("Final Drone informations:")
+        for info in summary["final_drone_info"]:
+            logging.critical(
+                "  Drone id:%s, Group id:%s, Score: %s, Is abs defective?: %s, Is rel defective?: %s",  # noqa: E501
+                info["drone_id"], info["group_id"], info["final_score"],
+                info["is_abs_defective"], info["is_rel_defective"]
+            )
         logging.critical("-" * 30)
 
         # Desempenho das propostas dos drones

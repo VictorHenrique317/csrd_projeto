@@ -7,15 +7,17 @@ import logging
 
 from simulation_statistics import STATS
 from config import (
-    SIMULATION_SPEED_FACTOR, PROB_INJECT_ABS_POS_SENSOR_ERROR,
-    ABS_POS_ERROR_MAGNITUDE, PROB_INJECT_REL_POS_SENSOR_ERROR,
+    SIMULATION_SPEED_FACTOR, PROB_IS_INITIALLY_ABS_DEFECTIVE,
+    ABS_POS_ERROR_MAGNITUDE, PROB_IS_INITIALLY_REL_DEFECTIVE,
     REL_POS_ERROR_MAGNITUDE, RELATIVE_POSITION_ERROR_THRESHOLD,
     ABSOLUTE_POSITION_ERROR_THRESHOLD, VOTING_THRESHOLD_PREPARES,
     VOTING_THRESHOLD_CONSISTENCY_IN_PREPARES,
     CREDIT_MANAGED_SUCCESSFUL_VALIDATION, CREDIT_SUCCESSFUL_PROPOSAL_VALIDATED,
     CREDIT_MANAGED_REJECTION, CREDIT_REJECTED_PROPOSAL,
     CREDIT_PARTICIPATED_SUCCESSFUL_VALIDATION, CREDIT_PARTICIPATED_REJECTION,
-    PROB_DRONE_INITIATES_CONSENSUS, PROB_LEADER_INITIATES_CONSENSUS_SELF)
+    PROB_DRONE_INITIATES_CONSENSUS, PROB_LEADER_INITIATES_CONSENSUS_SELF,
+    PROB_ABS_GETS_DEFECTIVE, PROB_REL_GETS_DEFECTIVE,
+    SIMULATION_DURATION_SECONDS)
 from data_structures import (
     Position, DroneConsensusStatus, DistanceVector, calculate_vector_distance,
     calculate_distance, ConsensusMessage, MessageType)
@@ -51,6 +53,8 @@ class Drone(threading.Thread):
         self.stop_event = threading.Event()
         self.proposals_made = 0
         self.proposals_rejected_by_group = 0
+        self.is_drone_abs_defective = random.random() < PROB_IS_INITIALLY_ABS_DEFECTIVE  # noqa: E501
+        self.is_drone_rel_defective = random.random() < PROB_IS_INITIALLY_REL_DEFECTIVE  # noqa: E501
 
         logging.info(
             f"Drone {self.drone_id} initialized at true_pos {self.true_abs_pos}, "  # noqa: E501
@@ -58,10 +62,14 @@ class Drone(threading.Thread):
         )
 
     def _get_group_candidate_ids(self):
-        return [
-            mid for mid in self.group_members_ids
-            if mid != self.management_node_id and mid != self.drone_id
-        ]
+        candidates = []
+        for mid in self.group_members_ids:
+            if mid == self.management_node_id or mid == self.drone_id:
+                continue
+            drone_obj = self.message_broker.drones_by_id.get(mid)
+            if drone_obj and drone_obj.credit_score >= 40:
+                candidates.append(mid)
+        return candidates
 
     def _get_group_management_node_id(self):
         return self.management_node_id
@@ -105,7 +113,7 @@ class Drone(threading.Thread):
             random.uniform(-0.1, 0.1) * SIMULATION_SPEED_FACTOR
 
         self.was_last_abs_pos_reading_intentionally_bad = False
-        if random.random() < PROB_INJECT_ABS_POS_SENSOR_ERROR:
+        if self.is_drone_abs_defective:
             self.was_last_abs_pos_reading_intentionally_bad = True
             err_x = random.uniform(-ABS_POS_ERROR_MAGNITUDE,
                                    ABS_POS_ERROR_MAGNITUDE)
@@ -143,7 +151,7 @@ class Drone(threading.Thread):
                         member_drone_obj.true_abs_pos - self.true_abs_pos
                     sensed_vec = DistanceVector(true_vec.x, true_vec.y,
                                                 true_vec.z)
-                    if random.random() < PROB_INJECT_REL_POS_SENSOR_ERROR:
+                    if self.is_drone_rel_defective:
                         err_dx = random.uniform(
                             -REL_POS_ERROR_MAGNITUDE, REL_POS_ERROR_MAGNITUDE
                         )
@@ -268,6 +276,9 @@ class Drone(threading.Thread):
 
     def _handle_pre_prepare(self, message: ConsensusMessage):
         if self.is_management_node:
+            return
+
+        if self.credit_score < 40:
             return
 
         logging.info(
@@ -549,6 +560,22 @@ class Drone(threading.Thread):
                 del self.active_consensus_proposals[proposal_key]
             self.consensus_status = DroneConsensusStatus.IDLE
 
+    def _randomly_introduce_defect(self):
+        delta_t = 0.05 * SIMULATION_SPEED_FACTOR
+        p_abs_per_step = PROB_ABS_GETS_DEFECTIVE * delta_t
+        p_rel_per_step = PROB_REL_GETS_DEFECTIVE * delta_t
+        if random.random() < p_abs_per_step:
+            self.is_drone_abs_defective = True
+            logging.info(
+                f"{self.drone_id} ABS DEFECTIVE SENSOR INJECTED."
+            )
+
+        if random.random() < p_rel_per_step:
+            self.is_drone_rel_defective = True
+            logging.info(
+                f"{self.drone_id} REL DEFECTIVE SENSOR INJECTED."
+            )
+
     def run(self):
         logging.info(f"Drone {self.drone_id} thread started.")
         self.message_inbox = self.message_broker.drone_inboxes \
@@ -567,14 +594,20 @@ class Drone(threading.Thread):
                 logging.debug(f"{self.drone_id} received: {message}")
                 if (message.msg_type == MessageType.REQUEST_POSITION_CONSENSUS and  # noqa: E501
                         self.is_management_node):
+                    # Drone de gerenciamento recebe requisição de consenso
                     self._handle_request_position_consensus(message)
                 elif (message.msg_type == MessageType.PRE_PREPARE and
                       not self.is_management_node):
+                    # Candidatos recebem PRE_PREPARE do líder
                     self._handle_pre_prepare(message)
                 elif (message.msg_type == MessageType.INTRA_PREPARE and
                       self.is_management_node):
+                    # Drone de gerenciamento recebe INTRA_PREPARE
+                    # dos candidatos
                     self._handle_intra_prepare(message)
                 elif message.msg_type == MessageType.INTRA_COMMIT:
+                    # Todos os drones recebem INTRA_COMMIT com o
+                    # resultado do consenso
                     self._handle_intra_commit(message, is_self_leader=False)
                 else:
                     logging.debug(
@@ -596,6 +629,9 @@ class Drone(threading.Thread):
                     f"Error in drone {self.drone_id} run loop: {e}",
                     exc_info=True
                 )
+
+            self._randomly_introduce_defect()
+            STATS.increment_completed_steps_count()
             time.sleep(0.05 * SIMULATION_SPEED_FACTOR)
         logging.info(f"Drone {self.drone_id} thread stopped.")
 
